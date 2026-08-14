@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TierGate.AspNetCore/TierGate.AspNetCore.csproj" />
+    <Project Path="src/TierGate.Core/TierGate.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TierGate.AspNetCore.Tests/TierGate.AspNetCore.Tests.csproj" />
+    <Project Path="tests/TierGate.Core.Tests/TierGate.Core.Tests.csproj" />
+  </Folder>
+</Solution>
