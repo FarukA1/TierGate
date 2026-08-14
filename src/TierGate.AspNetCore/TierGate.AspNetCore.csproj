@@ -8,7 +8,7 @@
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 
-    <Author>Faruk Awofeso</Author>
+    <Authors>Faruk Awofeso</Authors>
     <Company>Faruk Awofeso</Company>
     <Description>ASP.NET Core middleware for TierGate — tiered rate limiting and quota enforcement.</Description>
     <PackageProjectUrl>https://github.com/FarukA1/TierGate</PackageProjectUrl>
