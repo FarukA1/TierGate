@@ -1,5 +1,9 @@
 # TierGate
 
+[![TierGate.Core](https://img.shields.io/nuget/v/TierGate.Core?label=TierGate.Core)](https://www.nuget.org/packages/TierGate.Core)
+[![TierGate.AspNetCore](https://img.shields.io/nuget/v/TierGate.AspNetCore?label=TierGate.AspNetCore)](https://www.nuget.org/packages/TierGate.AspNetCore)
+[![License](https://img.shields.io/github/license/FarukA1/TierGate)](LICENSE)
+
 Tiered rate-limiting and quota tracking for .NET — subscription-tier-aware, Table Storage-first, fail-closed by default.
 
 Extracted and generalized from a tiered rate-limiting pattern built and run in production for a real SaaS API.

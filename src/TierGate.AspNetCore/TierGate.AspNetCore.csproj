@@ -12,6 +12,8 @@
     <Company>Faruk Awofeso</Company>
     <Description>ASP.NET Core middleware for TierGate — tiered rate limiting and quota enforcement.</Description>
     <PackageProjectUrl>https://github.com/FarukA1/TierGate</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/FarukA1/TierGate</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>

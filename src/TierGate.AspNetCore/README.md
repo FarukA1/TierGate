@@ -1,5 +1,7 @@
 # TierGate.AspNetCore
 
+[![NuGet](https://img.shields.io/nuget/v/TierGate.AspNetCore)](https://www.nuget.org/packages/TierGate.AspNetCore)
+
 ASP.NET Core middleware for [TierGate.Core](https://www.nuget.org/packages/TierGate.Core) — tiered rate limiting and quota enforcement.
 
 ## Installation

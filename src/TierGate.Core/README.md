@@ -1,5 +1,7 @@
 # TierGate.Core
 
+[![NuGet](https://img.shields.io/nuget/v/TierGate.Core)](https://www.nuget.org/packages/TierGate.Core)
+
 Tiered rate-limiting and quota tracking for .NET.
 
 ## Overview
