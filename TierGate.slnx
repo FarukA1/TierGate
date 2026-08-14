@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/demos/">
+    <Project Path="demos/TierGate.AspNetDemo/TierGate.AspNetDemo.csproj" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/TierGate.AspNetCore/TierGate.AspNetCore.csproj" />
     <Project Path="src/TierGate.Core/TierGate.Core.csproj" />

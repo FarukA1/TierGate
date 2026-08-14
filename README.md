@@ -15,6 +15,10 @@ Every serious SaaS API needs subscription-tier-aware rate limiting: different re
 | [`TierGate.Core`](src/TierGate.Core) | Rate-limit stores (`InMemoryRateLimitStore`, `TableStorageRateLimitStore`), `RateLimitWindow`, and the generic `TierGate` policy-gate helpers. |
 | [`TierGate.AspNetCore`](src/TierGate.AspNetCore) | `UseTierGate` middleware — tier resolution, window checks, response headers, RFC7807 errors — plus `GateResult` → `IActionResult` conversion for controller-level gating. |
 
+## Demo
+
+[`demos/TierGate.AspNetDemo`](demos/TierGate.AspNetDemo) is a runnable ASP.NET Core API showing both packages end to end with `InMemoryRateLimitStore`.
+
 ## License
 
 MIT
