@@ -11,6 +11,7 @@
     <PackageProjectUrl>https://github.com/FarukA1/TierGate</PackageProjectUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
 
     <PackageTags>rate limiting, quota, throttling, tiers, saas, azure table storage</PackageTags>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -20,6 +21,7 @@
   <ItemGroup>
     <None Include="LICENSE" Pack="true" PackagePath="" />
     <None Include="README.md" Pack="true" PackagePath="" />
+    <None Include="icon.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
