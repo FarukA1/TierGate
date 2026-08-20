@@ -21,6 +21,10 @@ public class TierGatePipelineTests
         public Task SeedUsageAsync(
             string subjectKey, RateLimitWindow window, int count, CancellationToken cancellationToken = default) =>
             Task.CompletedTask;
+
+        public Task ReconcileUsageAsync(
+            string subjectKey, RateLimitWindow window, int authoritativeCount, CancellationToken cancellationToken = default) =>
+            Task.CompletedTask;
     }
 
     private static TierGateOptions<string, TestTier> BuildOptions(

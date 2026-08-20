@@ -117,6 +117,14 @@ public sealed class TableStorageRateLimitStore : IRateLimitStore
         await _table.AddEntityAsync(entity, cancellationToken);
     }
 
+    public async Task ReconcileUsageAsync(
+        string subjectKey, RateLimitWindow window, int authoritativeCount, CancellationToken cancellationToken = default)
+    {
+        var (partitionKey, rowKey) = BuildKeys(subjectKey, window, DateTimeOffset.UtcNow);
+        var entity = new TableEntity(partitionKey, rowKey) { [CountColumn] = authoritativeCount };
+        await _table.UpsertEntityAsync(entity, TableUpdateMode.Replace, cancellationToken);
+    }
+
     private static (string PartitionKey, string RowKey) BuildKeys(
         string subjectKey, RateLimitWindow window, DateTimeOffset now)
     {

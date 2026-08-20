@@ -23,6 +23,10 @@ Every serious SaaS API needs subscription-tier-aware rate limiting: different re
 
 [`demos/TierGate.AspNetDemo`](demos/TierGate.AspNetDemo) is a runnable ASP.NET Core API showing both packages end to end with `InMemoryRateLimitStore`.
 
+## Usage notes
+
+`TryConsumeAsync` also works as a cooldown/debounce check, not just classic N-per-window rate limiting: call it with `limit: 1` to mean "was this touched in the last N minutes" rather than "how many times." At `limit: 1`, `RateLimitResult.Remaining`/`.Limit` are always 0 either way — only `.Allowed` and `.ResetsAt` are meaningful in that pattern.
+
 ## License
 
 MIT

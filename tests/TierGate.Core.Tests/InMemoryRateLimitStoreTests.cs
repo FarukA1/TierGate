@@ -75,4 +75,40 @@ public class InMemoryRateLimitStoreTests
 
         Assert.Equal(0, usage);
     }
+
+    [Fact]
+    public async Task ReconcileUsageAsync_OverwritesAnExistingBucket()
+    {
+        var store = new InMemoryRateLimitStore();
+        await store.TryConsumeAsync("subject-1", RateLimitWindow.PerMinute, limit: 100);
+        await store.TryConsumeAsync("subject-1", RateLimitWindow.PerMinute, limit: 100);
+
+        await store.ReconcileUsageAsync("subject-1", RateLimitWindow.PerMinute, authoritativeCount: 50);
+        var usage = await store.GetCurrentUsageAsync("subject-1", RateLimitWindow.PerMinute);
+
+        Assert.Equal(50, usage);
+    }
+
+    [Fact]
+    public async Task ReconcileUsageAsync_CreatesAMissingBucket()
+    {
+        var store = new InMemoryRateLimitStore();
+
+        await store.ReconcileUsageAsync("subject-1", RateLimitWindow.PerMinute, authoritativeCount: 30);
+        var usage = await store.GetCurrentUsageAsync("subject-1", RateLimitWindow.PerMinute);
+
+        Assert.Equal(30, usage);
+    }
+
+    [Fact]
+    public async Task ReconcileUsageAsync_AcceptsZeroUnlikeSeedUsageAsync()
+    {
+        var store = new InMemoryRateLimitStore();
+        await store.TryConsumeAsync("subject-1", RateLimitWindow.PerMinute, limit: 100);
+
+        await store.ReconcileUsageAsync("subject-1", RateLimitWindow.PerMinute, authoritativeCount: 0);
+        var usage = await store.GetCurrentUsageAsync("subject-1", RateLimitWindow.PerMinute);
+
+        Assert.Equal(0, usage);
+    }
 }

@@ -29,4 +29,16 @@ public interface IRateLimitStore
         RateLimitWindow window,
         int count,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Overwrites a window bucket's count with an authoritative value from outside the store's own
+    /// counting — e.g. a provider's real usage report, used to correct drift. Creates the bucket if
+    /// absent, otherwise replaces it. Unlike <see cref="SeedUsageAsync"/>, this also accepts 0 (a
+    /// legitimate authoritative reading, not "nothing to seed").
+    /// </summary>
+    Task ReconcileUsageAsync(
+        string subjectKey,
+        RateLimitWindow window,
+        int authoritativeCount,
+        CancellationToken cancellationToken = default);
 }

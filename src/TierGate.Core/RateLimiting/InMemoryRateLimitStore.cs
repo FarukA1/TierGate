@@ -55,6 +55,15 @@ public sealed class InMemoryRateLimitStore : IRateLimitStore
         return Task.CompletedTask;
     }
 
+    public Task ReconcileUsageAsync(
+        string subjectKey, RateLimitWindow window, int authoritativeCount, CancellationToken cancellationToken = default)
+    {
+        var now = _timeProvider.GetUtcNow();
+        var key = BuildKey(subjectKey, window, now);
+        _counters[key] = authoritativeCount;
+        return Task.CompletedTask;
+    }
+
     private static string BuildKey(string subjectKey, RateLimitWindow window, DateTimeOffset now) =>
         $"{subjectKey}:{window.GetBucketKey(now)}";
 }
