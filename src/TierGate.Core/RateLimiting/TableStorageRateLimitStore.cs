@@ -14,7 +14,7 @@ namespace TierGate.Core.RateLimiting;
 public sealed class TableStorageRateLimitStore : IRateLimitStore
 {
     private const string CountColumn = "Count";
-    private const int MaxRetries = 3;
+    private const int MaxRetries = 6;
 
     private readonly TableClient _table;
     private readonly ILogger<TableStorageRateLimitStore> _logger;
@@ -77,8 +77,9 @@ public sealed class TableStorageRateLimitStore : IRateLimitStore
             {
                 _logger.LogDebug(ex, "Counter ETag conflict for {PartitionKey}/{RowKey}, attempt {Attempt}.",
                     partitionKey, rowKey, attempt + 1);
+                await Task.Delay(TimeSpan.FromMilliseconds(Random.Shared.Next(10, 30) * (attempt + 1)), cancellationToken);
             }
-            catch (RequestFailedException ex)
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 _logger.LogWarning(ex, "Table Storage request failed for {PartitionKey}/{RowKey}.",
                     partitionKey, rowKey);
