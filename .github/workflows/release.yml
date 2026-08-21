@@ -16,15 +16,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # full history so MinVer can find the tag
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
         with:
           dotnet-version: 8.0.x
-
-      - name: Derive version from tag
-        id: version
-        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
 
       - name: Restore dependencies
         run: dotnet restore
@@ -36,17 +34,18 @@ jobs:
         run: dotnet test --configuration Release --no-build --verbosity normal
 
       # TierGate.Core and TierGate.AspNetCore are versioned together, one number per
-      # release — AspNetCore's packed dependency on Core needs to resolve to a version
-      # that's actually published, so keeping them in lockstep avoids ordering issues.
+      # release. MinVer derives that version from the pushed tag for both projects,
+      # so AspNetCore's packed dependency on Core resolves to the version being
+      # published in this same run.
       - name: Pack
         run: |
           dotnet pack src/TierGate.Core/TierGate.Core.csproj \
             --configuration Release \
-            -p:PackageVersion=${{ steps.version.outputs.version }} \
+            --no-build \
             -o ./artifacts
           dotnet pack src/TierGate.AspNetCore/TierGate.AspNetCore.csproj \
             --configuration Release \
-            -p:PackageVersion=${{ steps.version.outputs.version }} \
+            --no-build \
             -o ./artifacts
 
       - name: NuGet login (OIDC -> short-lived API key)
