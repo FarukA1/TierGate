@@ -18,6 +18,8 @@ public sealed class TableStorageRateLimitStore : IRateLimitStore
 
     private readonly TableClient _table;
     private readonly ILogger<TableStorageRateLimitStore> _logger;
+    private readonly SemaphoreSlim _tableReadyGate = new(1, 1);
+    private bool _tableReady;
 
     public TableStorageRateLimitStore(
         string connectionString,
@@ -27,7 +29,24 @@ public sealed class TableStorageRateLimitStore : IRateLimitStore
         ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
         _logger = logger ?? NullLogger<TableStorageRateLimitStore>.Instance;
         _table = new TableClient(connectionString, tableName);
-        _table.CreateIfNotExists();
+    }
+
+    // Table creation moved out of the constructor — a blocking network call there could tie up a
+    // thread during DI construction, and any failure there wasn't reachable via StoreUnavailable.
+    private async Task EnsureTableExistsAsync(CancellationToken cancellationToken)
+    {
+        if (_tableReady) return;
+        await _tableReadyGate.WaitAsync(cancellationToken);
+        try
+        {
+            if (_tableReady) return;
+            await _table.CreateIfNotExistsAsync(cancellationToken);
+            _tableReady = true;
+        }
+        finally
+        {
+            _tableReadyGate.Release();
+        }
     }
 
     public async Task<RateLimitResult> TryConsumeAsync(
@@ -41,6 +60,8 @@ public sealed class TableStorageRateLimitStore : IRateLimitStore
         {
             try
             {
+                await EnsureTableExistsAsync(cancellationToken);
+
                 TableEntity entity;
                 ETag etag;
 
@@ -96,6 +117,7 @@ public sealed class TableStorageRateLimitStore : IRateLimitStore
     public async Task<int> GetCurrentUsageAsync(
         string subjectKey, RateLimitWindow window, CancellationToken cancellationToken = default)
     {
+        await EnsureTableExistsAsync(cancellationToken);
         var (partitionKey, rowKey) = BuildKeys(subjectKey, window, DateTimeOffset.UtcNow);
         try
         {
@@ -113,6 +135,7 @@ public sealed class TableStorageRateLimitStore : IRateLimitStore
         string subjectKey, RateLimitWindow window, int count, CancellationToken cancellationToken = default)
     {
         if (count <= 0) return;
+        await EnsureTableExistsAsync(cancellationToken);
         var (partitionKey, rowKey) = BuildKeys(subjectKey, window, DateTimeOffset.UtcNow);
         var entity = new TableEntity(partitionKey, rowKey) { [CountColumn] = count };
         await _table.AddEntityAsync(entity, cancellationToken);
@@ -121,6 +144,7 @@ public sealed class TableStorageRateLimitStore : IRateLimitStore
     public async Task ReconcileUsageAsync(
         string subjectKey, RateLimitWindow window, int authoritativeCount, CancellationToken cancellationToken = default)
     {
+        await EnsureTableExistsAsync(cancellationToken);
         var (partitionKey, rowKey) = BuildKeys(subjectKey, window, DateTimeOffset.UtcNow);
         var entity = new TableEntity(partitionKey, rowKey) { [CountColumn] = authoritativeCount };
         await _table.UpsertEntityAsync(entity, TableUpdateMode.Replace, cancellationToken);

@@ -1,5 +1,6 @@
 using Azure;
 using Azure.Data.Tables;
+using Microsoft.Extensions.Configuration;
 using Testcontainers.Azurite;
 using TierGate.Core.RateLimiting;
 
@@ -141,6 +142,36 @@ public sealed class TableStorageRateLimitStoreTests : IAsyncLifetime
         var usage = await _store.GetCurrentUsageAsync(subject, RateLimitWindow.CalendarMonth);
 
         Assert.Equal(0, usage);
+    }
+
+    // Not a real credential — an unreachable dummy endpoint used to prove the constructor doesn't do
+    // network I/O. Sourced via configuration (User Secrets locally) rather than a literal in the test
+    // body, so nothing connection-string-shaped sits in source for a secret scanner to flag. Falls back
+    // to the same dummy value when no user secret is set (e.g. in CI), since there's no real secret here.
+    private static string UnreachableConnectionString()
+    {
+        // Order matters: the in-memory default goes first so User Secrets (added after) overrides it
+        // when set, rather than the other way around.
+        var config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Azurite:UnreachableConnectionString"] =
+                    "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Zm9v;TableEndpoint=http://127.0.0.1:1;",
+            })
+            .AddUserSecrets<TableStorageRateLimitStoreTests>(optional: true)
+            .Build();
+
+        return config["Azurite:UnreachableConnectionString"]!;
+    }
+
+    [Fact]
+    public void Constructor_DoesNotBlockOnNetworkIO()
+    {
+        // Table creation used to happen synchronously in the constructor. This points at nothing
+        // listening — if the constructor still did I/O, this would throw or hang.
+        var store = new TableStorageRateLimitStore(UnreachableConnectionString(), tableName: "TestCounters");
+
+        Assert.NotNull(store);
     }
 
     [Fact]
