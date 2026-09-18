@@ -5,6 +5,9 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 3
+    ignore:
+      # Deliberately low floor so consumers on older Azure SDKs can install the package
+      - dependency-name: "Azure.Data.Tables"
     groups:
       nuget-dependencies:
         patterns:
