@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Data.Tables" Version="12.9.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.13" />
   </ItemGroup>
 
 </Project>
